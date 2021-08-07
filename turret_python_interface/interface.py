@@ -12,20 +12,32 @@ from .requestpacket import RequestPacket
 
 
 class Interface(AbstractContextManager):
-    def __init__(self, serial_path: Path = Path("/") / "dev" / "ttyS0", baud: int = 115200):
+    def __init__(
+        self,
+        serial_path: Path = Path("/") / "dev" / "ttyS0",
+        baud: int = 115200,
+        timeout=30,
+    ):
         self.path = serial_path
         self.baud = baud
         self.con: Optional[Serial] = None
+        self.timeout = timeout  # presumably in seconds?
 
     def __enter__(self) -> Interface:
         path = str(self.path.absolute())
         logger.debug(f"opening serial port {path!r} with baud {self.baud}...")
-        self.con = Serial(str(self.path.absolute()), baudrate=self.baud)
+        self.con = Serial(
+            str(self.path.absolute()), baudrate=self.baud, timeout=self.timeout
+        )
         logger.trace("opened serial port.")
         return self
 
-    def __exit__(self, __exc_type: Optional[Type[BaseException]], __exc_value: Optional[BaseException],
-                 __traceback: Optional[TracebackType]) -> Optional[bool]:
+    def __exit__(
+        self,
+        __exc_type: Optional[Type[BaseException]],
+        __exc_value: Optional[BaseException],
+        __traceback: Optional[TracebackType],
+    ) -> Optional[bool]:
         if self.con:
             logger.trace("closing serial port...")
             self.con.close()

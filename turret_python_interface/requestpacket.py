@@ -21,7 +21,7 @@ class RequestPacket:
         payload = json.dumps(cattr.unstructure(self)).encode()
         buf.write(payload)
 
-        payload_crc = crc_ethernet.calculate_checksum(payload[:len(payload)//4*4])
+        payload_crc = crc_ethernet.calculate_checksum(payload[: len(payload) // 4 * 4])
         buf.write(payload_crc.to_bytes(4, "big", signed=False))
 
         # seek to the start of the BytesIO buffer
