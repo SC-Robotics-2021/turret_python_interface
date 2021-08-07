@@ -12,12 +12,28 @@ from .requestpacket import RequestPacket
 
 
 class Interface(AbstractContextManager):
+    """Provides a context manager abstraction around the turret-monitor-firmware device."""
+
     def __init__(
         self,
         serial_path: Path = Path("/") / "dev" / "ttyS0",
         baud: int = 115200,
         timeout=30,
     ):
+        """
+        Constructs an instance of this interface. This is a **CONTEXT MANAGER**
+
+        Examples:
+            >>> from turret_python_interface.interface import Interface
+            >>> with Interface() as iface:
+            ...     print(iface.get_telemetry())
+            TelemetryPacket(turret_pos=0.0)
+
+        Args:
+            serial_path: filesystem path to the serial port
+            baud: baud rate to communicate with the device
+            timeout: serial read timeout, in seconds(?)
+        """
         self.path = serial_path
         self.baud = baud
         self.con: Optional[Serial] = None
@@ -46,6 +62,7 @@ class Interface(AbstractContextManager):
         return super().__exit__(__exc_type, __exc_value, __traceback)
 
     def get_telemetry(self) -> TelemetryPacket:
+        """Requests telemetry from the device, returns the resulting packet."""
         request = RequestPacket(kind=0)
         logger.debug("sending request {!r}...", request)
         self.con.write(bytes(request))
