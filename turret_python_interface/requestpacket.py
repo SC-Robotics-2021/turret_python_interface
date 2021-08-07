@@ -11,7 +11,7 @@ from io import BytesIO
 
 
 @attr.dataclass
-class Request:
+class RequestPacket:
     """a request object"""
 
     kind: int  # u32 BE
