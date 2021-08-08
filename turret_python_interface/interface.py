@@ -15,10 +15,10 @@ class Interface(AbstractContextManager):
     """Provides a context manager abstraction around the turret-monitor-firmware device."""
 
     def __init__(
-        self,
-        serial_path: Path = Path("/") / "dev" / "ttyS0",
-        baud: int = 115200,
-        timeout=30,
+            self,
+            serial_path: Path = Path("/") / "dev" / "ttyS0",
+            baud: int = 115200,
+            timeout=30,
     ):
         """
         Constructs an instance of this interface. This is a **CONTEXT MANAGER**
@@ -49,16 +49,12 @@ class Interface(AbstractContextManager):
         return self
 
     def __exit__(
-        self,
-        __exc_type: Optional[Type[BaseException]],
-        __exc_value: Optional[BaseException],
-        __traceback: Optional[TracebackType],
+            self,
+            __exc_type: Optional[Type[BaseException]],
+            __exc_value: Optional[BaseException],
+            __traceback: Optional[TracebackType],
     ) -> Optional[bool]:
-        if self.con:
-            logger.trace("closing serial port...")
-            self.con.close()
-            logger.trace("serial port closed.")
-
+        self.close()
         return super().__exit__(__exc_type, __exc_value, __traceback)
 
     def get_telemetry(self) -> TelemetryPacket:
@@ -73,3 +69,9 @@ class Interface(AbstractContextManager):
         response = TelemetryPacket.from_bytes(response_bytes + b"\x00")
         logger.debug(f"received response {response!r}")
         return response
+
+    def close(self):
+        if self.con:
+            logger.trace("closing serial port...")
+            self.con.close()
+            logger.trace("serial port closed.")

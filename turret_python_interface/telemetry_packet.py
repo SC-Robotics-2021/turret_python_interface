@@ -6,7 +6,7 @@ this MUST match the fields defined in the firmware package [here]()
 """
 import attr
 import cattr
-import json
+from cbor2 import dumps, loads
 from .crc_definition import crc_ethernet
 
 from cobs import cobs
@@ -20,7 +20,7 @@ class TelemetryPacket:
     @property
     def crc32(self):
         """computes the CRC32-Ethernet as defined by the device."""
-        payload = json.dumps(cattr.unstructure(self))
+        payload = dumps(cattr.unstructure(self))
         payload = payload[: len(payload) // 4 * 4]
 
         return crc_ethernet.calculate_checksum(payload)
@@ -36,4 +36,4 @@ class TelemetryPacket:
             raise ValueError(
                 f"host checksum {crc} does not match device checksum {device_crc}. Abort."
             )
-        return cattr.structure(json.loads(data), TelemetryPacket)
+        return cattr.structure(loads(data), TelemetryPacket)
