@@ -7,3 +7,4 @@ def test_decode():
 
     # can't compare floats by equality; but we know the value is ~50 since we provided the data.
     assert round(response.turret_pos) == 50
+

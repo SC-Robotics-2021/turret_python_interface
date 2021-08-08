@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from abc import ABC
+from io import BytesIO
+from typing import TypeVar, Type
 
 import attr
 import cattr
-from _cbor2 import loads, dumps
+import six
+from cbor2 import loads, dumps
 from cobs import cobs
 from loguru import logger
 
 from .crc_definition import crc_ethernet
 
-from typing import TypeVar, Type
-
 T = TypeVar("T")
+
 
 @attr.dataclass
 class MessageBase:
@@ -37,4 +38,18 @@ class MessageBase:
 
         return crc_ethernet.calculate_checksum(payload)
 
+    def __bytes__(self):
+        buf = BytesIO()
+        # serialize this instance and ensure its in a binary form.
+        # six is used to ensure its binary; such that the encoding `dumps` func can be replaced
+        # seamlessly. (Json returns a string, cbor2 returns bytes.)
+        payload = six.ensure_binary(dumps(cattr.unstructure(self)))
+        buf.write(payload)
 
+        payload_crc = crc_ethernet.calculate_checksum(payload[: len(payload) // 4 * 4])
+        buf.write(payload_crc.to_bytes(4, "big", signed=False))
+
+        # seek to the start of the BytesIO buffer
+        buf.seek(0)
+        # return the formed buffer object.
+        return cobs.encode(buf.read())
