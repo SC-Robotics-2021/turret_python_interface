@@ -8,7 +8,7 @@ from serial import Serial
 from loguru import logger
 
 from .telemetry_packet import TelemetryPacket
-from .requestpacket import RequestPacket
+from .request_packet import RequestPacket
 
 
 class Interface(AbstractContextManager):
