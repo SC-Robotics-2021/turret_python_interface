@@ -64,8 +64,9 @@ class Interface(AbstractContextManager):
     def get_telemetry(self) -> TelemetryPacket:
         """Requests telemetry from the device, returns the resulting packet."""
         request = RequestPacket(kind=0)
-        logger.debug("sending request {!r}...", request)
-        self.con.write(bytes(request))
+        payload = bytes(request)
+        logger.debug(f"sending request {request!r} [{payload!r}]...")
+        self.con.write(payload)
         logger.debug("awaiting response...")
         response_bytes = self.con.read_until(b"\x00")
         logger.debug(f"received device response := {response_bytes!r}")
