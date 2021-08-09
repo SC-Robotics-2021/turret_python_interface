@@ -9,7 +9,7 @@ def request_packet_fx() -> RequestPacket:
 
 
 def test_encode(request_packet_fx):
-    """ Verifies a round-trip (en|de)coding cycle for a request packet """
+    """Verifies a round-trip (en|de)coding cycle for a request packet"""
     # Serialize the packet.
     wire_bytes = bytes(request_packet_fx)
 
@@ -18,4 +18,3 @@ def test_encode(request_packet_fx):
 
     # Verify that the packet can be decoded successfully.
     assert RequestPacket.from_bytes(wire_bytes) == request_packet_fx
-
