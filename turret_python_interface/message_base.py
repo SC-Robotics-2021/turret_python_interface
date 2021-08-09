@@ -48,8 +48,11 @@ class MessageBase:
 
         payload_crc = crc_ethernet.calculate_checksum(payload[: len(payload) // 4 * 4])
         buf.write(payload_crc.to_bytes(4, "big", signed=False))
+        # tack the sentinel onto the end.
+        buf.write(b"\x00")
 
         # seek to the start of the BytesIO buffer
         buf.seek(0)
         # return the formed buffer object.
-        return cobs.encode(buf.read())
+        data = buf.read()
+        return cobs.encode(data)
