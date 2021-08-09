@@ -19,11 +19,11 @@ T = TypeVar("T")
 class MessageBase:
     @classmethod
     def from_bytes(cls: Type[T], raw: bytes) -> T:
-        packet = cobs.decode(raw[0: raw.find(b"\x00")])
+        packet = cobs.decode(raw[0 : raw.find(b"\x00")])
         data, device_crc = packet[:-4], int.from_bytes(packet[-4:], "big")
         logger.debug(f"data bytes := {data!r}, device CRC := {device_crc}")
         if (
-                crc := crc_ethernet.calculate_checksum(data[: len(data) // 4 * 4])
+            crc := crc_ethernet.calculate_checksum(data[: len(data) // 4 * 4])
         ) != device_crc:
             raise ValueError(
                 f"host checksum {crc} does not match device checksum {device_crc}. Abort."

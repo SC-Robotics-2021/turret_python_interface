@@ -1,5 +1,6 @@
 from turret_python_interface.request_packet import RequestPacket
 
+
 def test_encode():
     # with current encoding, the length is at least two words
 
