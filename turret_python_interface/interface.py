@@ -7,8 +7,8 @@ from typing import Optional, Type
 from serial import Serial
 from loguru import logger
 
-from turret_python_interface.datamodel.telemetry_packet import TelemetryPacket
-from turret_python_interface.datamodel.request_packet import RequestPacket
+from .datamodel.telemetry_packet import TelemetryPacket
+from .datamodel.request_packet import RequestPacket, RequestKind
 
 
 class Interface(AbstractContextManager):
@@ -39,14 +39,19 @@ class Interface(AbstractContextManager):
         self.con: Optional[Serial] = None
         self.timeout = timeout  # presumably in seconds?
 
+        self.open_serial()
+
     def __enter__(self) -> Interface:
+        self.open_serial()
+        logger.trace("opened serial port.")
+        return self
+
+    def open_serial(self):
         path = str(self.path.absolute())
         logger.debug(f"opening serial port {path!r} with baud {self.baud}...")
         self.con = Serial(
             str(self.path.absolute()), baudrate=self.baud, timeout=self.timeout
         )
-        logger.trace("opened serial port.")
-        return self
 
     def __exit__(
         self,
@@ -59,9 +64,15 @@ class Interface(AbstractContextManager):
 
     def get_telemetry(self) -> TelemetryPacket:
         """Requests telemetry from the device, returns the resulting packet."""
-        request = RequestPacket(kind=0)
+        request = RequestPacket(kind=RequestKind.TELEMETRY)
         payload = bytes(request)
         logger.debug(f"sending request {request!r} [{payload!r}]...")
+
+        # flush the input buffer,to ensure we don't have unread bytes from previous requests
+        # Note: the buffer can't simply be purged after reading the response, as the extra
+        #       bytes may not have yet arrived. By the time we get here they should have, hopefully.
+        self.con.reset_input_buffer()
+
         self.con.write(payload)
         logger.debug("awaiting response...")
         response_bytes = self.con.read_until(b"\x00")
