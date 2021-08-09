@@ -1,15 +1,21 @@
+import pytest
+
 from turret_python_interface.request_packet import RequestPacket
 
 
-def test_encode():
-    # with current encoding, the length is at least two words
+@pytest.fixture
+def request_packet_fx() -> RequestPacket:
+    return RequestPacket(kind=0)
 
-    request_packet = RequestPacket(kind=0)
-    wire_bytes = bytes(request_packet)
-    assert len(wire_bytes) >= 8
 
-    assert request_packet.crc32 == 168841071
+def test_encode(request_packet_fx):
+    """ Verifies a round-trip (en|de)coding cycle for a request packet """
+    # Serialize the packet.
+    wire_bytes = bytes(request_packet_fx)
 
-    packet = bytes(RequestPacket(kind=4))
+    # Assert that the packet's checksum coincides with the ground-truth from the microcontroller.
+    assert request_packet_fx.crc32 == 168841071
 
-    assert RequestPacket.from_bytes(packet) == RequestPacket(4)
+    # Verify that the packet can be decoded successfully.
+    assert RequestPacket.from_bytes(wire_bytes) == request_packet_fx
+
