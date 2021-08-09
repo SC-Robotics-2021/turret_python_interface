@@ -1,4 +1,4 @@
-from turret_python_interface.telemetry_packet import TelemetryPacket
+from turret_python_interface.datamodel.telemetry_packet import TelemetryPacket
 
 
 def test_decode():

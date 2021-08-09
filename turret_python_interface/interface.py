@@ -7,8 +7,8 @@ from typing import Optional, Type
 from serial import Serial
 from loguru import logger
 
-from .telemetry_packet import TelemetryPacket
-from .request_packet import RequestPacket
+from turret_python_interface.datamodel.telemetry_packet import TelemetryPacket
+from turret_python_interface.datamodel.request_packet import RequestPacket
 
 
 class Interface(AbstractContextManager):

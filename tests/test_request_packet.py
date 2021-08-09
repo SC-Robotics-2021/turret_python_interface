@@ -1,6 +1,6 @@
 import pytest
 
-from turret_python_interface.request_packet import RequestPacket
+from turret_python_interface.datamodel.request_packet import RequestPacket
 
 
 @pytest.fixture

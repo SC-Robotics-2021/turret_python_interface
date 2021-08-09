@@ -10,7 +10,7 @@ from cbor2 import loads, dumps
 from cobs import cobs
 from loguru import logger
 
-from .crc_definition import crc_ethernet
+from turret_python_interface.crc_definition import crc_ethernet
 
 T = TypeVar("T")
 
