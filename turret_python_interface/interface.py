@@ -34,16 +34,16 @@ class Interface(AbstractContextManager):
             baud: baud rate to communicate with the device
             timeout: serial read timeout, in seconds(?)
         """
-        self.path = serial_path
-        self.baud = baud
-        self.con: Optional[Serial] = None
-        self.timeout = timeout  # presumably in seconds?
+        self._path = serial_path
+        self._baud = baud
+        self._con: Optional[Serial] = None
+        self._timeout = timeout  # presumably in seconds?
 
     def __enter__(self) -> Interface:
-        path = str(self.path.absolute())
-        logger.debug(f"opening serial port {path!r} with baud {self.baud}...")
-        self.con = Serial(
-            str(self.path.absolute()), baudrate=self.baud, timeout=self.timeout
+        path = str(self._path.absolute())
+        logger.debug(f"opening serial port {path!r} with baud {self._baud}...")
+        self._con = Serial(
+            str(self._path.absolute()), baudrate=self._baud, timeout=self._timeout
         )
         logger.trace("opened serial port.")
         return self
@@ -54,9 +54,9 @@ class Interface(AbstractContextManager):
         __exc_value: Optional[BaseException],
         __traceback: Optional[TracebackType],
     ) -> Optional[bool]:
-        if self.con:
+        if self._con:
             logger.trace("closing serial port...")
-            self.con.close()
+            self._con.close()
             logger.trace("serial port closed.")
 
         return super().__exit__(__exc_type, __exc_value, __traceback)
@@ -66,9 +66,9 @@ class Interface(AbstractContextManager):
         request = RequestPacket(kind=0)
         payload = bytes(request)
         logger.debug(f"sending request {request!r} [{payload!r}]...")
-        self.con.write(payload)
+        self._con.write(payload)
         logger.debug("awaiting response...")
-        response_bytes = self.con.read_until(b"\x00")
+        response_bytes = self._con.read_until(b"\x00")
         logger.debug(f"received device response := {response_bytes!r}")
         response = TelemetryPacket.from_bytes(response_bytes + b"\x00")
         logger.debug(f"received response {response!r}")
