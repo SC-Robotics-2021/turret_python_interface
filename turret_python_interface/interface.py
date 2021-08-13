@@ -16,6 +16,7 @@ class Interface(AbstractContextManager):
 
     def __init__(
         self,
+        *,  # disallow positional arguments.
         serial_path: Path = Path("/") / "dev" / "ttyS0",
         baud: int = 115200,
         timeout=30,
