@@ -33,11 +33,15 @@ class MockInterface(Interface):
     def state(self) -> float:
         # basically, we are reproducing a sine wave.
         # Every time the state is observed, time progresses.
+
+        # preserve the current time
+        t = self.t
+        # increment t for the next tick
         self.t += pi / 4
         if self.t >= tau:
             self.t = 0
 
-        return sin(self.t - pi / 4)
+        return sin(t)
 
     def __enter__(self) -> Interface:
         ...
