@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "turret_python_interface"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Joshua Salzedo <joshuasalzedo@gmail.com>"]
 
@@ -12,6 +12,8 @@ cobs = "^1.1.4"
 crc = "^1.0.1"
 pyserial = "^3.5"
 loguru = "^0.5.3"
+cbor2 = "^5.4.1"
+six = "^1.16.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
