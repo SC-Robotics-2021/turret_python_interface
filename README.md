@@ -7,7 +7,7 @@ The aim is to provide a pythonic interface for interacting with this device.
 
 ## Example usage
 ```py
-from turret_python_interface.interface import Interface
+from turret_python_interface import Interface
 
 from pathlib import Path
 
