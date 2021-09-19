@@ -65,7 +65,7 @@ class Interface(AbstractContextManager):
     def get_telemetry(self) -> TelemetryPacket:
         """Requests telemetry from the device, returns the resulting packet."""
         request = RequestPacket(kind=RequestKind.TELEMETRY)
-        payload = bytes(request)
+        payload = bytes(request) + b'\x00'
         logger.debug(f"sending request {request!r} [{payload!r}]...")
 
         # flush the input buffer,to ensure we don't have unread bytes from previous requests
@@ -76,6 +76,8 @@ class Interface(AbstractContextManager):
         self.con.write(payload)
         logger.debug("awaiting response...")
         response_bytes = self.con.read_until(b"\x00")
+        if response_bytes == b"":
+            raise EOFError("device didn't return any data, is it connected?")
         logger.debug(f"received device response := {response_bytes!r}")
         response = TelemetryPacket.from_bytes(response_bytes + b"\x00")
         logger.debug(f"received response {response!r}")
