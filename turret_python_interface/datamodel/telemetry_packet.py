@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-from .message_base import MessageBase
+from enum import Enum
 
 import attr
+
+from .message_base import MessageBase
+
+
+class TurretDirection(Enum):
+    Forward = "Forward"
+    Backward = "Backward"
 
 
 @attr.dataclass
@@ -13,3 +20,4 @@ class TelemetryPacket(MessageBase):
     """
 
     turret_pos: float
+    turret_rot: TurretDirection

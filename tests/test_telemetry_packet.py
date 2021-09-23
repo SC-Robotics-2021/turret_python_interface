@@ -2,8 +2,8 @@ from turret_python_interface.datamodel.telemetry_packet import TelemetryPacket
 
 
 def test_decode():
-    raw = b"\x16\xa1jturret_pos\xfaBG\xfdqV\x14\xd0\x9d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    raw = b'\r\xa2jturret_pos\x18jturret_rotgForwardgM\x06\x10\x00'
     response = TelemetryPacket.from_bytes(raw)
 
     # can't compare floats by equality; but we know the value is ~50 since we provided the data.
-    assert round(response.turret_pos) == 50
+    assert round(response.turret_pos) == 0
